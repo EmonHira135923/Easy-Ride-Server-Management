@@ -1,14 +1,14 @@
 const express = require("express");
 const cors = require("cors");
 const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
+require("dotenv").config();
 const app = express();
 const port = process.env.PORT || 3000;
 
 app.use(cors());
 app.use(express.json());
 
-const uri =
-  "mongodb+srv://emonhossainhira231_db_user:YfXZMsmXsecVDw0X@travel-easy.qxp6jxr.mongodb.net/?appName=Travel-Easy";
+const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@travel-easy.qxp6jxr.mongodb.net/?appName=Travel-Easy`;
 
 const client = new MongoClient(uri, {
   serverApi: {
