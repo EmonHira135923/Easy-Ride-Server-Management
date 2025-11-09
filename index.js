@@ -27,9 +27,15 @@ async function run() {
     const database = client.db("traveldb");
     const vehiclecollections = database.collection("vehicles");
 
-    // Get Method
+    // // Get Method
+    // app.get("/vehicles", async (req, res) => {
+    //   const cursor = vehiclecollections.find();
+    //   const allValues = await cursor.toArray();
+    //   res.send(allValues);
+    // });
+    // All Vehicles
     app.get("/vehicles", async (req, res) => {
-      const cursor = vehiclecollections.find();
+      const cursor = vehiclecollections.find().sort({ createdAt: 1 }).limit(6);
       const allValues = await cursor.toArray();
       res.send(allValues);
     });
