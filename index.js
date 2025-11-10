@@ -33,9 +33,17 @@ async function run() {
     //   const allValues = await cursor.toArray();
     //   res.send(allValues);
     // });
-    // All Vehicles
-    app.get("/vehicles", async (req, res) => {
+
+    // Dynamic Vehicles
+    app.get("/dynamic-vehicles", async (req, res) => {
       const cursor = vehiclecollections.find().sort({ createdAt: 1 }).limit(6);
+      const allValues = await cursor.toArray();
+      res.send(allValues);
+    });
+
+    // alldata
+    app.get("/allvehicles", async (req, res) => {
+      const cursor = vehiclecollections.find();
       const allValues = await cursor.toArray();
       res.send(allValues);
     });
