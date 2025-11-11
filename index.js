@@ -23,16 +23,9 @@ async function run() {
     await client.connect();
 
     // Database Create
-
     const database = client.db("traveldb");
     const vehiclecollections = database.collection("vehicles");
-
-    // // Get Method
-    // app.get("/vehicles", async (req, res) => {
-    //   const cursor = vehiclecollections.find();
-    //   const allValues = await cursor.toArray();
-    //   res.send(allValues);
-    // });
+    const bookingsCollection = database.collection("bookings");
 
     // Dynamic Vehicles
     app.get("/dynamic-vehicles", async (req, res) => {
@@ -49,39 +42,75 @@ async function run() {
     });
 
     // Find One Value find in opreation
-    app.get("/vehicles/:id", async (req, res) => {
+    app.get("/allvehicles/:id", async (req, res) => {
       const id = req.params.id;
-      const query = { _id: new ObjectId(id) };
+      const query = { _id: id };
       const result = await vehiclecollections.findOne(query);
       res.send(result);
     });
 
-    // Delete One Value in Database
-    app.delete("/vehicles/:id", async (req, res) => {
-      const id = req.params.id;
-      const query = { _id: new ObjectId(id) };
-      const result = await vehiclecollections.deleteOne(query);
-      res.send(result);
+    // Post Method
+    app.post("/bookings", async (req, res) => {
+      try {
+        const bookingData = req.body;
+        const result = await bookingsCollection.insertOne(bookingData);
+        res.status(201).json({ success: true, booking: result });
+      } catch (err) {
+        console.error(err);
+        res.status(500).json({ success: false, message: "Booking failed" });
+      }
     });
 
-    // Patch One value in Database
-    app.patch("/vehicles/:id", async (req, res) => {
-      const id = req.params.id;
-      const updatedata = req.body;
-      const query = { _id: new ObjectId(id) };
-      const update = {
-        $set: updatedata,
-      };
-      const option = {};
-      const result = await vehiclecollections.updateOne(query, update, option);
-      res.send(result);
+    // AddCar
+    app.post("/allvehicles", async (req, res) => {
+      try {
+        const vehicleData = req.body;
+        const result = await vehiclecollections.insertOne(vehicleData);
+        res.status(201).json({ success: true, vehicle: result });
+      } catch (err) {
+        console.error(err);
+        res
+          .status(500)
+          .json({ success: false, message: "Failed to add vehicle" });
+      }
     });
 
-    // POST Method
-    app.post("/vehicles", async (req, res) => {
-      const data = req.body;
-      const result = await vehiclecollections.insertOne(data);
-      res.send(result);
+    // Delete vehicle by ID
+    app.delete("/allvehicles/:id", async (req, res) => {
+      try {
+        const id = req.params.id;
+        const query = { _id: new ObjectId(id) };
+        const result = await vehiclecollections.deleteOne(query);
+
+        if (result.deletedCount > 0) {
+          res.status(200).json({ success: true, message: "Vehicle deleted" });
+        } else {
+          res
+            .status(404)
+            .json({ success: false, message: "Vehicle not found" });
+        }
+      } catch (err) {
+        console.error(err);
+        res.status(500).json({ success: false, message: "Failed to delete" });
+      }
+    });
+
+    // Update vehicle by ID
+    app.put("/allvehicles/:id", async (req, res) => {
+      try {
+        const id = req.params.id;
+        const updatedVehicle = req.body;
+        const query = { _id: new ObjectId(id) };
+        const updateDoc = { $set: updatedVehicle };
+
+        const result = await vehiclecollections.updateOne(query, updateDoc);
+        res
+          .status(200)
+          .json({ success: true, message: "Vehicle updated", result });
+      } catch (err) {
+        console.error(err);
+        res.status(500).json({ success: false, message: "Failed to update" });
+      }
     });
 
     await client.db("admin").command({ ping: 1 });
