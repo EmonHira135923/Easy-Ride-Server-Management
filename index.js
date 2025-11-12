@@ -84,18 +84,6 @@ async function run() {
           .json({ success: false, message: "Failed to add vehicle" });
       }
     });
-    app.post("/allvehicles", async (req, res) => {
-      try {
-        const vehicleData = req.body;
-        const result = await vehiclecollections.insertOne(vehicleData);
-        res.status(201).json({ success: true, vehicle: result });
-      } catch (err) {
-        console.error(err);
-        res
-          .status(500)
-          .json({ success: false, message: "Failed to add vehicle" });
-      }
-    });
 
     // Delete vehicle by ID
     app.delete("/allvehicles/:id", async (req, res) => {
